@@ -33,6 +33,8 @@ def analyze_text(pages):
     page_statistics = {}
     document_statistics = {}
     all_words = []
+    omitted_words = ["the", "a", "and", "of", "in", "to", "i"]
+
     for i, page in enumerate(pages):
         words = re.findall(r"\b[a-z]+", page.lower())
         if not words:
@@ -41,12 +43,16 @@ def analyze_text(pages):
                 "average_word_length": 0,
             }
             continue
-        all_words.extend(words)
+
+        filtered_words = [word for word in words if word not in omitted_words]
+        all_words.extend(filtered_words)
 
         # Get page statistics
-        frequency_page = collections.Counter(words)
+        frequency_page = collections.Counter(filtered_words)
         most_common = max(frequency_page.items(), key=lambda x: x[1])
-        average_word_length = round(sum([len(word) for word in words]) / len(words), 2)
+        average_word_length = round(
+            sum([len(word) for word in filtered_words]) / len(filtered_words), 2
+        )
         page_statistics[f"page {i+1}"] = {
             "most_common": most_common,
             "average_word_length": average_word_length,
@@ -74,13 +80,25 @@ def analyze_text(pages):
 def display(page_statistics, document_statistics):
 
     for page, details in page_statistics.items():
-        print(
-            f'{page} has the common word of "{details["most_common"][0]}" appearing {details["most_common"][1]} times\nwith an average word length of {details["average_word_length"]}'
-        )
+        most_common = details["most_common"]
+        if most_common == None:
+            print(
+                f'{page} has no common words\nwith an average word length of {details["average_word_length"]}'
+            )
+        else:
+            print(
+                f'{page} has the common word of "{details["most_common"][0]}" appearing {details["most_common"][1]} times\nwith an average word length of {details["average_word_length"]}'
+            )
 
-    print(
-        f'The document has the common word of "{document_statistics["document"]["most_common"][0]}" appearing {document_statistics["document"]["most_common"][1]} times\nwith an average word length of {document_statistics["document"]["average_word_length"]}'
-    )
+    doc_most_common = document_statistics["document"]["most_common"]
+    if doc_most_common is None:
+        print(
+            f'The document has no common words\nwith an average word length of {document_statistics["document"]["average_word_length"]}'
+        )
+    else:
+        print(
+            f'The document has the common word of "{document_statistics["document"]["most_common"][0]}" appearing {document_statistics["document"]["most_common"][1]} times\nwith an average word length of {document_statistics["document"]["average_word_length"]}'
+        )
 
 
 # 5. Main program:
