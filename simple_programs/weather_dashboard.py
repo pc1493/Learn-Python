@@ -36,10 +36,9 @@ def get_weather(city, api_key):
         weather_data = weather_url.json()
 
     except Exception as e:
+        print(e)
         sys.exit("An exception has occured.")
     else:
-        print(json.dumps(lat_lon, indent=2))
-        print(json.dumps(weather_data, indent=2))
         return weather_data
 
 
@@ -56,7 +55,7 @@ def format(weather_data):
     wind_speed = weather_data["wind"]["speed"]
     description = weather_data["weather"][0]["description"].capitalize()
 
-    return f"{description}, the temperature is {temperature:.2f}°C and feels like {feels_like:2.f}°C.\nThe humidity is {humidity}%\nThe wind speed is {wind_speed} m/s."
+    return f"{description}, the temperature is {temperature:.2f}°C and feels like {feels_like:.2f}°C.\nThe humidity is {humidity}%\nThe wind speed is {wind_speed} m/s."
 
 
 # 4. Main program:
